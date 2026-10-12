@@ -3,319 +3,343 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>日系手帳風旅遊海報 Prompt 產生器</title>
+  <title>日系手帳旅遊海報 Prompt 簡易產生器</title>
   <style>
     :root {
-      --primary: #ff85a2;
-      --primary-hover: #ff6b8b;
-      --bg: #fffbf5;
+      --primary: #ff7597;
+      --primary-hover: #f05a80;
+      --bg: #fff8f5;
       --card-bg: #ffffff;
-      --border: #f3d7d7;
-      --text: #4a403b;
-      --highlight: #fef08a;
+      --border: #f4d3d8;
+      --text: #453733;
+      --accent: #ffebf0;
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 14px; }
+    .container { max-width: 950px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 20px; }
+    h1 { font-size: 24px; color: #d6335c; margin-bottom: 6px; }
+    .sub { font-size: 13px; color: #826e68; }
+    
+    .card { background: var(--card-bg); border-radius: 14px; border: 1px solid var(--border); padding: 18px; margin-bottom: 16px; box-shadow: 0 3px 10px rgba(230,170,180,0.08); }
+    .card-title { font-size: 16px; font-weight: bold; color: #d6335c; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    
+    .row { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+    .col { flex: 1; min-width: 200px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #624b45; }
+    input[type="text"], input[type="number"], input[type="date"], select, textarea { 
+      width: 100%; 
+      padding: 9px 12px; 
+      border: 1px solid #e8cbcf; 
+      border-radius: 8px; 
+      background: #fffcfb; 
+      font-size: 14px; 
+      color: #333; 
+      outline: none; 
     }
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      padding: 24px 16px;
-      line-height: 1.5;
+    input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, select:focus, textarea:focus { 
+      border-color: var(--primary); 
+      background: #fff; 
     }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    h1 {
-      font-size: 26px;
-      color: #d94868;
-      margin-bottom: 8px;
-    }
-    p.subtitle {
-      font-size: 14px;
-      color: #8c7870;
-    }
-    .card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(220, 160, 160, 0.08);
-    }
-    .card-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #d94868;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .form-group {
-      margin-bottom: 14px;
-    }
-    .form-row {
-      display: flex;
-      gap: 12px;
-    }
-    .form-row .form-group {
-      flex: 1;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #5c4b43;
-    }
-    input[type="text"], textarea, select {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #ebd3d3;
-      border-radius: 8px;
-      background-color: #faf8f5;
-      font-size: 14px;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input[type="text"]:focus, textarea:focus, select:focus {
-      border-color: var(--primary);
-      background-color: #ffffff;
-    }
-    textarea {
-      resize: vertical;
-      font-family: inherit;
-    }
-    .btn-wrap {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
-    button {
-      flex: 1;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-primary {
-      background-color: var(--primary);
-      color: white;
-    }
-    .btn-primary:hover {
-      background-color: var(--primary-hover);
-    }
-    .btn-secondary {
-      background-color: #ebdcd5;
-      color: #5c4b43;
-      flex: 0 0 160px;
-    }
-    .btn-secondary:hover {
-      background-color: #dec8bf;
-    }
-    .output-card {
-      border: 2px dashed #f4a2b8;
-      background: #fffdfc;
-    }
-    pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: #faf5f3;
-      padding: 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      color: #3b302c;
-      border: 1px solid #f0e1de;
-      max-height: 480px;
-      overflow-y: auto;
-    }
-    .copy-success {
-      display: inline-block;
-      margin-left: 10px;
-      color: #10b981;
-      font-weight: bold;
-      font-size: 14px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
+    
+    /* 快捷選擇標籤 */
+    .preset-group { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .preset-btn { background: #fdf2f4; border: 1px solid #f8c2cb; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; color: #b82e50; font-weight: 500; transition: 0.2s; }
+    .preset-btn:hover, .preset-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    
+    /* 動態列表條目 */
+    .item-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; background: #fffbfb; border: 1px dashed #f0ced3; padding: 8px 10px; border-radius: 8px; }
+    .item-row input { flex: 1; }
+    .btn-del { background: #fee2e2; color: #dc2626; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+    .btn-del:hover { background: #fca5a5; }
+    .btn-add { background: var(--accent); color: #d6335c; border: 1px dashed #f29bb0; padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; margin-top: 4px; display: inline-block; }
+    .btn-add:hover { background: #fcd7e0; }
+
+    /* 按鈕與結果區 */
+    .action-bar { display: flex; gap: 10px; margin: 20px 0; align-items: center; }
+    .btn-copy { flex: 1; background: var(--primary); color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .btn-copy:hover { background: var(--primary-hover); }
+    .copy-tip { font-weight: bold; color: #10b981; opacity: 0; transition: 0.3s; font-size: 14px; }
+    
+    pre { background: #fdfbf9; border: 1px solid #ebd9d7; padding: 16px; border-radius: 10px; font-size: 13px; white-space: pre-wrap; word-break: break-word; line-height: 1.6; color: #3b2c28; max-height: 500px; overflow-y: auto; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <h1>🌸 手帳風行程海報 Prompt 產生器</h1>
-      <p class="subtitle">自訂公仔、每日時間表、景點與任務清單，一鍵拼出完整的 AI 繪圖提示詞</p>
-    </header>
+<div class="container">
+  <header>
+    <h1>🎨 日系手帳風行程 Prompt 產生器</h1>
+    <p class="sub">點選快捷鍵與按鈕，自動組合完整 Midjourney / DALL·E 提示詞</p>
+  </header>
 
-    <!-- 1. 基本資訊 -->
-    <div class="card">
-      <div class="card-title">📌 1. 旅行基本資訊</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>主標題（頂部大字）</label>
-          <input type="text" id="tripTitle" value="日本家庭旅行 2026">
-        </div>
-        <div class="form-group">
-          <label>天數進度</label>
-          <input type="text" id="dayLabel" value="第 1 天">
-        </div>
+  <!-- 1. 基本資訊 -->
+  <div class="card">
+    <div class="card-title">🗓️ 1. 基本標題與日期</div>
+    <div class="row">
+      <div class="col" style="flex: 2;">
+        <label>頂部主標題</label>
+        <input type="text" id="tripTitle" value="日本家庭旅行 2026" oninput="buildPrompt()">
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>日期與星期</label>
-          <input type="text" id="dateStr" value="11月6日 (五)">
-        </div>
-        <div class="form-group">
-          <label>當日主題路線</label>
-          <input type="text" id="routeSummary" value="抵達・川崎 ➔ 淺草老街">
-        </div>
+      <!-- 數字鍵輸入天數 -->
+      <div class="col" style="flex: 1;">
+        <label>第幾天 (數字鍵)</label>
+        <input type="number" id="dayNumber" value="1" min="1" max="99" oninput="buildPrompt()">
+      </div>
+      <!-- 日期選擇器 -->
+      <div class="col" style="flex: 1.5;">
+        <label>行程日期 (月曆選取)</label>
+        <input type="date" id="tripDatePicker" value="2026-11-06" onchange="buildPrompt()">
       </div>
     </div>
-
-    <!-- 2. 公仔角色設定 -->
-    <div class="card">
-      <div class="card-title">🧸 2. 主角公仔設定（English Prompt）</div>
-      <div class="form-group">
-        <label>主角造型描寫（外型、帽、衣著）</label>
-        <textarea id="mainCharDesc" rows="3">a cute doll (a little girl with big eyes, wearing a giant fluffy white cat-like/sheep-like hat with embroidered face features and whiskered cheeks, dressed in a layered yellow and white outfit with a tiny fuzzy white pouch)</textarea>
-      </div>
-      <div class="form-group">
-        <label>同伴角色描寫（可空白或加入寵物/第二隻公仔）</label>
-        <input type="text" id="companionDesc" value="her tiny companion doll (a little girl with brown hair in pink striped pajamas)">
-      </div>
-      <div class="form-group">
-        <label>公仔出現的小場景細節</label>
-        <input type="text" id="charScenes" value="peeking over a wooden sign, happily driving a small blue car with tiny baggage, and holding a small camera in the city">
-      </div>
-    </div>
-
-    <!-- 3. 左側時間表 -->
-    <div class="card">
-      <div class="card-title">⏰ 3. 左側：今日詳細時間表 (一行一個項目)</div>
-      <div class="form-group">
-        <label>時間表項目（可包含 Emoji 與括號備註）</label>
-        <textarea id="scheduleTimeline" rows="7">07:00 ✈️ 出發！香港機場 ➔ 成田機場
-13:30 - 14:30 🚉 乘搭 N’EX成田特快直達JR川崎站
-14:40 - 15:10 🚶 步行約10分鐘到 Hotel Enmichi 辦理入住 & 放低行李 (⚠️大行李先寄放!)
-15:30 🚉 JR川崎站出發前往淺草
-16:15 - 17:30 🏮 淺草寺・雷門（漫步仲見世通，品嚐在地小食；參拜感受江戶風情）
-17:45 - 19:30 🗼 晴空塔 睇日落同夜景 (Tokyo Skytree)
-20:00 🛍️ 返川崎，周邊 LAZONA 商場食晚餐 + 散步
-22:00 🏨 返 Hotel Enmichi 休息</textarea>
-      </div>
-    </div>
-
-    <!-- 4. 右側景點與小任務 -->
-    <div class="card">
-      <div class="card-title">📸 4. 右側：焦點插圖與任務</div>
-      <div class="form-group">
-        <label>精選景點插圖（①、②、③ 等）</label>
-        <textarea id="spotHighlights" rows="4">① 🏮 淺草・雷門 (16:15 - 17:30) 歷史與老街巡禮，仲見世通小食超讚！
-② 🗼 東京晴空塔 (17:45 - 19:30) 浪漫日落與夜景，包含觀景台標記
-③ 🛍️ LAZONA 川崎廣場 購物與美味晚餐，附拉麵插圖與 Hotel Enmichi 拍立得照片</textarea>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>今日任務清單 (Checkbox)</label>
-          <textarea id="taskChecklist" rows="4">□ 在雷門前大合照 📸
-□ 仲見世通食人形燒 😋
-□ 睇到超靚晴空塔日落 🌇
-□ 順利抵達 & 寄存行李 🧳</textarea>
-        </div>
-        <div class="form-group">
-          <label>右下角路線小地圖</label>
-          <input type="text" id="routeMap" value="成田機場 ➔ 川崎 (Hotel Enmichi) ➔ 淺草">
-        </div>
-      </div>
-    </div>
-
-    <!-- 按鈕區 -->
-    <div class="btn-wrap">
-      <button class="btn-primary" onclick="generatePrompt()">✨ 產生 Prompt</button>
-      <button class="btn-secondary" onclick="copyPrompt()">📋 一鍵複製</button>
-      <span class="copy-success" id="copyNotice">已複製！</span>
-    </div>
-
-    <!-- 輸出區 -->
-    <div class="card output-card">
-      <div class="card-title">📝 產生的 Prompt（可直接貼入 AI 畫圖）</div>
-      <pre id="promptResult">請點擊上方「✨ 產生 Prompt」按鈕...</pre>
+    <div class="row">
+      <div class="col"><label>當日大主題 / 路線</label><input type="text" id="tripTheme" value="抵達・川崎 ➔ 淺草老街" oninput="buildPrompt()"></div>
+      <div class="col"><label>右下角簡易地圖路線</label><input type="text" id="mapRoute" value="成田機場 ➔ 川崎 (Hotel Enmichi) ➔ 淺草" oninput="buildPrompt()"></div>
     </div>
   </div>
 
-  <script>
-    function generatePrompt() {
-      const tripTitle = document.getElementById('tripTitle').value.trim();
-      const dayLabel = document.getElementById('dayLabel').value.trim();
-      const dateStr = document.getElementById('dateStr').value.trim();
-      const routeSummary = document.getElementById('routeSummary').value.trim();
-      
-      const mainCharDesc = document.getElementById('mainCharDesc').value.trim();
-      const companionDesc = document.getElementById('companionDesc').value.trim();
-      const charScenes = document.getElementById('charScenes').value.trim();
-      
-      const scheduleTimeline = document.getElementById('scheduleTimeline').value.trim();
-      const spotHighlights = document.getElementById('spotHighlights').value.trim();
-      const taskChecklist = document.getElementById('taskChecklist').value.trim();
-      const routeMap = document.getElementById('routeMap').value.trim();
+  <!-- 2. 公仔快速選擇 -->
+  <div class="card">
+    <div class="card-title">🧸 2. 登場公仔設定（按鍵快速切換）</div>
+    <div class="preset-group">
+      <button class="preset-btn active" onclick="setPreset('doll', this)">毛毛帽大眼公仔</button>
+      <button class="preset-btn" onclick="setPreset('rilakkuma', this)">鬆弛熊 (Rilakkuma)</button>
+      <button class="preset-btn" onclick="setPreset('chiikawa', this)">Chiikawa (吉伊卡哇)</button>
+      <button class="preset-btn" onclick="setPreset('custom', this)">自由輸入</button>
+    </div>
+    <div class="row">
+      <div class="col" style="flex:2;">
+        <label>公仔英文描述 (AI 角色)</label>
+        <textarea id="charDesc" rows="3" oninput="buildPrompt()">a cute doll (a little girl with big eyes, wearing a giant fluffy white cat-like/sheep-like hat with embroidered face features and whiskered cheeks, dressed in a layered yellow and white outfit with a tiny fuzzy white pouch) and her tiny companion doll (a little girl with brown hair in pink striped pajamas)</textarea>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <label>公仔互動小動作</label>
+        <input type="text" id="charActions" value="peeking over a signpost, happily driving a small pastel blue car, and holding a camera in the city" oninput="buildPrompt()">
+      </div>
+    </div>
+  </div>
 
-      const prompt = `A highly detailed, packed, and vibrant "cute Japanese scrapbook travel itinerary poster" in a busy kawaii planner and travel journal style. The image has a rich collage aesthetic on textured cream-colored paper with handwritten Traditional Chinese, washi tape, stamps, stickers, and hand-drawn floral borders, leaving absolutely no empty space.
+  <!-- 3. 左側時間軸 -->
+  <div class="card">
+    <div class="card-title">⏰ 3. 左側：今日詳細行程表</div>
+    <div id="timelineList"></div>
+    <button class="btn-add" onclick="addTimelineItem()">+ 新增行程時間點</button>
+  </div>
+
+  <!-- 4. 右側景點插圖 -->
+  <div class="card">
+    <div class="card-title">📸 4. 右側：焦點插圖與說明</div>
+    <div id="spotList"></div>
+    <button class="btn-add" onclick="addSpotItem()">+ 新增景點插圖</button>
+  </div>
+
+  <!-- 5. 打卡任務清單 -->
+  <div class="card">
+    <div class="card-title">✅ 5. 今日打卡小任務 (Checkbox)</div>
+    <div id="taskList"></div>
+    <button class="btn-add" onclick="addTaskItem()">+ 新增打卡任務</button>
+  </div>
+
+  <!-- 產生與複製 -->
+  <div class="action-bar">
+    <button class="btn-copy" onclick="copyPrompt()">📋 一鍵複製 Prompt</button>
+    <span class="copy-tip" id="copyTip">已成功複製！✨</span>
+  </div>
+
+  <!-- 結果預覽 -->
+  <div class="card">
+    <div class="card-title">📝 Prompt 實時預覽（直接貼入 AI 產圖）</div>
+    <pre id="promptResult"></pre>
+  </div>
+</div>
+
+<script>
+  // 角色 Preset
+  const presets = {
+    doll: "a cute doll (a little girl with big eyes, wearing a giant fluffy white cat-like/sheep-like hat with embroidered face features and whiskered cheeks, dressed in a layered yellow and white outfit with a tiny fuzzy white pouch) and her tiny companion doll (a little girl with brown hair in pink striped pajamas)",
+    rilakkuma: "the adorable character Rilakkuma (a cute brown bear with round yellow ears) alongside Korilakkuma (a small white bear) and Kiiroitori (a cute little yellow chick companion)",
+    chiikawa: "cute characters from Chiikawa (a small round white bear creature with teardrop eyebrows) alongside Hachiware (blue-eared cat) and Usagi (yellow rabbit with long ears)",
+    custom: ""
+  };
+
+  function setPreset(type, btn) {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('charDesc').value = presets[type];
+    buildPrompt();
+  }
+
+  // 1. 行程時間軸資料
+  let defaultTimelines = [
+    { time: "07:00", icon: "✈️", text: "出發！香港機場 ➔ 成田機場" },
+    { time: "13:30 - 14:30", icon: "🚉", text: "乘搭 N’EX成田特快直達JR川崎站" },
+    { time: "14:40 - 15:10", icon: "🚶", text: "步行約10分鐘到 Hotel Enmichi 辦理入住 & 放低行李 (⚠️大行李先寄放!)" },
+    { time: "15:30", icon: "🚉", text: "JR川崎站出發前往淺草" },
+    { time: "16:15 - 17:30", icon: "🏮", text: "淺草寺・雷門（漫步仲見世通，品嚐在地小食；感受江戶風情）" },
+    { time: "17:45 - 19:30", icon: "🗼", text: "晴空塔 睇日落同夜景 (Tokyo Skytree)" },
+    { time: "20:00", icon: "🛍️", text: "返川崎，周邊 LAZONA 商場食晚餐 + 散步" },
+    { time: "22:00", icon: "🏨", text: "返 Hotel Enmichi 休息" }
+  ];
+
+  function renderTimelines() {
+    const container = document.getElementById('timelineList');
+    container.innerHTML = defaultTimelines.map((item, idx) => `
+      <div class="item-row">
+        <input type="text" style="width: 125px; flex:none;" value="${item.time}" placeholder="時間" oninput="defaultTimelines[${idx}].time=this.value; buildPrompt();">
+        <select style="width: 75px; flex:none;" onchange="defaultTimelines[${idx}].icon=this.value; buildPrompt();">
+          ${['✈️','🚉','🚶','🏮','🗼','🛍️','🍜','🏨','🚗','☕','🎆'].map(ic => `<option value="${ic}" ${ic===item.icon?'selected':''}>${ic}</option>`).join('')}
+        </select>
+        <input type="text" value="${item.text}" placeholder="行程內容" oninput="defaultTimelines[${idx}].text=this.value; buildPrompt();">
+        <button class="btn-del" onclick="delTimeline(${idx})">×</button>
+      </div>
+    `).join('');
+  }
+
+  function addTimelineItem() {
+    defaultTimelines.push({ time: "00:00", icon: "🚶", text: "新行程" });
+    renderTimelines();
+    buildPrompt();
+  }
+  function delTimeline(idx) {
+    defaultTimelines.splice(idx, 1);
+    renderTimelines();
+    buildPrompt();
+  }
+
+  // 2. 右側景點資料
+  let defaultSpots = [
+    { title: "🏮 淺草・雷門 (16:15 - 17:30)", desc: "歷史與老街巡禮，仲見世通小食超讚！" },
+    { title: "🗼 東京晴空塔 (17:45 - 19:30)", desc: "浪漫日落與夜景，包含觀景台打卡標籤" },
+    { title: "🛍️ LAZONA 川崎廣場", desc: "購物與美味晚餐，附拉麵插圖與 Hotel Enmichi 拍立得照片" }
+  ];
+
+  function renderSpots() {
+    const container = document.getElementById('spotList');
+    container.innerHTML = defaultSpots.map((item, idx) => `
+      <div class="item-row">
+        <input type="text" style="flex:1;" value="${item.title}" placeholder="景點標題" oninput="defaultSpots[${idx}].title=this.value; buildPrompt();">
+        <input type="text" style="flex:2;" value="${item.desc}" placeholder="插圖描述 / 小標註" oninput="defaultSpots[${idx}].desc=this.value; buildPrompt();">
+        <button class="btn-del" onclick="delSpot(${idx})">×</button>
+      </div>
+    `).join('');
+  }
+
+  function addSpotItem() {
+    defaultSpots.push({ title: "新景點", desc: "景點細節描述" });
+    renderSpots();
+    buildPrompt();
+  }
+  function delSpot(idx) {
+    defaultSpots.splice(idx, 1);
+    renderSpots();
+    buildPrompt();
+  }
+
+  // 3. 任務清單資料
+  let defaultTasks = [
+    "在雷門前大合照 📸",
+    "仲見世通食人形燒 😋",
+    "睇到超靚晴空塔日落 🌇",
+    "順利抵達 & 寄存行李 🧳"
+  ];
+
+  function renderTasks() {
+    const container = document.getElementById('taskList');
+    container.innerHTML = defaultTasks.map((item, idx) => `
+      <div class="item-row">
+        <input type="text" value="${item}" placeholder="打卡小任務" oninput="defaultTasks[${idx}]=this.value; buildPrompt();">
+        <button class="btn-del" onclick="delTask(${idx})">×</button>
+      </div>
+    `).join('');
+  }
+
+  function addTaskItem() {
+    defaultTasks.push("新打卡任務 ✨");
+    renderTasks();
+    buildPrompt();
+  }
+  function delTask(idx) {
+    defaultTasks.splice(idx, 1);
+    renderTasks();
+    buildPrompt();
+  }
+
+  // 輔助函式：將 YYYY-MM-DD 自動轉成 "11月6日 (五)"
+  function formatChineseDate(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    
+    const d = new Date(year, month - 1, day);
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    const weekday = weekdays[d.getDay()];
+    
+    return `${month}月${day}日 (${weekday})`;
+  }
+
+  // 核心：產生 Prompt
+  function buildPrompt() {
+    const title = document.getElementById('tripTitle').value;
+    const dayNum = document.getElementById('dayNumber').value || 1;
+    const badgeText = `第 ${dayNum} 天`;
+    
+    const rawDate = document.getElementById('tripDatePicker').value;
+    const formattedDate = formatChineseDate(rawDate);
+    
+    const theme = document.getElementById('tripTheme').value;
+    const mapRoute = document.getElementById('mapRoute').value;
+    const char = document.getElementById('charDesc').value;
+    const actions = document.getElementById('charActions').value;
+
+    const timelineStr = defaultTimelines.map(t => `- ${t.time} ${t.icon} ${t.text}`).join('\n');
+    const spotsStr = defaultSpots.map((s, i) => `Feature ⓪${i+1}: "${s.title}" - ${s.desc}`).join('\n');
+    const tasksStr = defaultTasks.map(tk => `  □ ${tk}`).join('\n');
+
+    const prompt = `A highly detailed, packed, and vibrant "cute Japanese scrapbook travel itinerary poster" in a busy kawaii planner and travel journal style. The image has a rich collage aesthetic on textured cream-colored paper with handwritten Traditional Chinese, washi tape, stamps, stickers, and hand-drawn floral borders, leaving absolutely no empty space.
 
 [ CHARACTERS & DOLL DESIGN ]
-Featuring the main character: ${mainCharDesc}${companionDesc ? ` accompanied by ${companionDesc}` : ''}. The characters appear in cute hand-drawn illustration styles across the page: ${charScenes}.
+Featuring the main character: ${char}.
+The character appears in hand-drawn cute illustration styles across the page: ${actions}.
 
 [ POSTER HEADER & LABELS ]
-- Top Header: Large decorative handwritten title reading "${tripTitle}" and prominent badge reading "${dayLabel}".
-- Subheader / Date: "${dateStr} ${routeSummary}" decorated with travel stamps, cherry blossoms, and cute tape stickers saying "小心行李", "第一天 start! ♡", "要多穿外套喔!".
+- Top Header: Large decorative handwritten title reading "${title}" and prominent curved banner badge reading "${badgeText}".
+- Subheader / Date: "${formattedDate} ${theme}" decorated with travel stamps, cherry blossoms, and washi tape stickers ("小心行李", "第一天 start! ♡", "要多穿外套喔!").
 
 [ TIMETABLE (LEFT SIDE) ]
-On the left side, there is a "今日行程" (Today's Schedule) vertical timeline formatted with colorful icons, clean markers, and handwritten Traditional Chinese:
-${scheduleTimeline}
+On the left side, there is a "今日行程" vertical timeline formatted with colorful icons, clean markers, and handwritten Traditional Chinese:
+${timelineStr}
 
 [ RIGHT SIDE: HIGHLIGHTED SPOTS & SCENERY ]
-Detailed scrapbook sections with polaroid borders, illustrations, and food stickers:
-${spotHighlights}
+Scrapbook sections featuring polaroid frames, handwritten notes, and cute food stickers:
+${spotsStr}
 
 [ BOTTOM SECTION: TASKS & ROUTE MAP ]
 - "今日任務" checklist box:
-${taskChecklist}
-- Mini illustrated roadmap with cute arrows: "${routeMap}".
-- Cute bear / doll driving a small pastel car with speech bubbles and lush flower decorations.`;
+${tasksStr}
+- Mini illustrated roadmap with cute arrows: "${mapRoute}".
+- Cute character driving a small pastel blue car with speech bubbles and lush flower decorations.`;
 
-      document.getElementById('promptResult').textContent = prompt;
-    }
+    document.getElementById('promptResult').textContent = prompt;
+  }
 
-    function copyPrompt() {
-      const resultText = document.getElementById('promptResult').textContent;
-      if (!resultText || resultText.includes('請點擊上方')) {
-        alert('請先點擊「產生 Prompt」！');
-        return;
-      }
-      navigator.clipboard.writeText(resultText).then(() => {
-        const notice = document.getElementById('copyNotice');
-        notice.style.opacity = '1';
-        setTimeout(() => {
-          notice.style.opacity = '0';
-        }, 1800);
-      });
-    }
+  function copyPrompt() {
+    const text = document.getElementById('promptResult').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const tip = document.getElementById('copyTip');
+      tip.style.opacity = '1';
+      setTimeout(() => tip.style.opacity = '0', 2000);
+    });
+  }
 
-    // 初始化自動產生一次
-    window.onload = generatePrompt;
-  </script>
+  // 初始化
+  renderTimelines();
+  renderSpots();
+  renderTasks();
+  buildPrompt();
+</script>
 </body>
 </html>
